@@ -4,17 +4,10 @@
 
 /// DO NOT CHANGE THE NAME AND FORMAT OF THIS FUNCTION
 double getOptimalValue(Eigen::Matrix3d state){
-  /*To store the state of a 3x3 matrix, we will use binary representation where the 
-  first two bits represents the entry at i=1,j=1 and the next two bits represent the 
-  entry i=1,j=2, etc. Since there are three different possible entries (-1,0,1), 0 will 
-  be represented by 00, 1 will be represented by 01, and -1 will be represented by 10.
-  To guarantee a one-to-one mapping between each matrix state and binary representation, we 
-  will simply shift each value to the left by 2*(3i+j-4) and sum them to get an int 
-  value
-  
-  Hence the Bellman Equation boils down to v*(s) = max(a)(gamma*E[v*(s')]) where gamma = 0.98
-  That is, v*(s) is the maximum over all actions of the expectation of v*(s') given that
-  p(s'|s,a) is uniform over all possible s'.
+  /*
+  For this problem, the Bellman Equation boils down to v*(s) = max(a)(gamma*E[v*(s')]) 
+  where gamma = 0.98. That is, v*(s) is the maximum over all actions of the expectation 
+  of v*(s') given that p(s'|s,a) is uniform over all possible s'.
 
   We will implement a depth-first recursive method to compute the optimal value for the given state*/
 
@@ -22,7 +15,7 @@ double getOptimalValue(Eigen::Matrix3d state){
   //Find and count number of free spaces
   for(int i=1; i<=3; i++){
     for(int j=1; j<=3; j++){
-      if(state.coeff(i,j) == 0){
+      if(state(i,j) == 0){
         freespaces++;
       }
     }
@@ -32,14 +25,21 @@ double getOptimalValue(Eigen::Matrix3d state){
   return getOptimalValuerecursive(state, 1, freespaces);
 }
 
+
+
+//recursive helper function
 double getOptimalValuerecursive(Eigen::Matrix3d state, double gamma, int freespaces){
-  int maxvalue;
+  double sum;
+  double maxsum=0;
+  double optimalvalue;
+  Eigen::Matrix3d stateaction;
+  Eigen::Matrix3d nextstate;
 
   //check if the game has ended (base case)
   //check rows
   for(int i=1; i<=3; i++){
-    if(state.coeff(i,1) == state.coeff(i,2) && state.coeff(i,2) == state.coeff(i,3)){
-      if(state.coeff(i,1)==1){
+    if(state(i,1) == state(i,2) && state(i,2) == state(i,3)){
+      if(state(i,1)==1){
         return 1;   //return 1 if winner
       }
       else{
@@ -49,8 +49,8 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, double gamma, int freespa
   }
   //check columns
   for(int j=1; j<=3; j++){
-    if(state.coeff(1,j) == state.coeff(2,j) && state.coeff(2,j) == state.coeff(3,j)){
-      if(state.coeff(1,j)==1){
+    if(state(1,j) == state(2,j) && state(2,j) == state(3,j)){
+      if(state(1,j)==1){
         return 1;   //return 1 if winner
       }
       else{
@@ -59,8 +59,8 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, double gamma, int freespa
     }
   }
   //check diagonals-"\"
-  if(state.coeff(1,1) == state.coeff(2,2) && state.coeff(2,2) == state.coeff(3,3)){
-    if(state.coeff(1,1)==1){
+  if(state(1,1) == state(2,2) && state(2,2) == state(3,3)){
+    if(state(1,1)==1){
       return 1;   //return 1 if winner
     }
     else{
@@ -68,8 +68,8 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, double gamma, int freespa
     }
   }
   //check diagonals-"/"
-  if(state.coeff(1,3) == state.coeff(2,2) && state.coeff(2,2) == state.coeff(3,1)){
-    if(state.coeff(1,3)==1){
+  if(state(1,3) == state(2,2) && state(2,2) == state(3,1)){
+    if(state(1,3)==1){
       return 1;   //return 1 if winner
     }
     else{
@@ -81,9 +81,32 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, double gamma, int freespa
     return 0;
   }
 
-  //find the max value function of the next state over all actions
+  //find the max value function of the next state over all possible actions. 
+  //Search for possible actions (free spaces)
+  for(int i=1; i<=3; i++){
+    for(int j=1; j<=3; j++){
+      if(state(i,j) == 0){
+        stateaction = state;
+        stateaction(i,j) = 1; //do action
+        sum = 0;
 
-  Eigen::Matrix3d nextstate = state;
-
+        //consider all s', take the sum
+        for(int a=1; a<=3; a++){
+          for(int b=1; b<=3; b++){
+            if(stateaction(a,b) == 0){
+              nextstate = stateaction;
+              nextstate(a,b) = 1;
+              sum = sum + getOptimalValuerecursive(nextstate, gamma*0.98, freespaces-2);
+            }
+          }
+        }
+        //update maxsum
+        if(sum>maxsum){
+          maxsum = sum;
+        }
+      }
+    }
+  }
+  optimalvalue = maxsum/(freespaces-1); //divide by number of s' to get the expectation
+  return optimalvalue;
 }
-
