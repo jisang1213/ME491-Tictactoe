@@ -22,16 +22,14 @@ double getOptimalValue(Eigen::Matrix3d state){
   }
 
   // return optimal value
-  return getOptimalValuerecursive(state, 1, freespaces);
+  return getOptimalValuerecursive(state, freespaces);
 }
 
-
-
 //recursive helper function
-double getOptimalValuerecursive(Eigen::Matrix3d state, double gamma, int freespaces){
+double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
   double sum;
   double maxsum=0;
-  double optimalvalue;
+  double nextoptimalvalue;
   Eigen::Matrix3d stateaction;
   Eigen::Matrix3d nextstate;
 
@@ -96,7 +94,7 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, double gamma, int freespa
             if(stateaction(a,b) == 0){
               nextstate = stateaction;
               nextstate(a,b) = 1;
-              sum = sum + getOptimalValuerecursive(nextstate, gamma*0.98, freespaces-2);
+              sum = sum + getOptimalValuerecursive(nextstate, freespaces-2);
             }
           }
         }
@@ -107,6 +105,6 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, double gamma, int freespa
       }
     }
   }
-  optimalvalue = maxsum/(freespaces-1); //divide by number of s' to get the expectation
-  return optimalvalue;
+  nextoptimalvalue = maxsum/(freespaces-1); //divide by number of s' to get the optimal value of the next state
+  return 0.98*nextoptimalvalue;
 }
