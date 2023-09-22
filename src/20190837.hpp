@@ -2,6 +2,8 @@
 #include <Eigen/Core>
 #include <Eigen/Dense>
 
+double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces);
+
 /// DO NOT CHANGE THE NAME AND FORMAT OF THIS FUNCTION
 double getOptimalValue(Eigen::Matrix3d state){
   /*
@@ -40,7 +42,7 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
       if(state(i,1)==1){
         return 1;   //return 1 if winner
       }
-      else{
+      else if(state(i,1)==-1){
         return 0;   //return 0 if looser
       }
     }
@@ -51,7 +53,7 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
       if(state(1,j)==1){
         return 1;   //return 1 if winner
       }
-      else{
+      else if(state(1,j)==-1){
         return 0;   //return 0 if looser
       }
     }
@@ -61,7 +63,7 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
     if(state(1,1)==1){
       return 1;   //return 1 if winner
     }
-    else{
+    else if(state(1,1)==-1){
       return 0;   //return 0 if looser
     }
   }
@@ -70,7 +72,7 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
     if(state(1,3)==1){
       return 1;   //return 1 if winner
     }
-    else{
+    else if(state(3,1)==-1){
       return 0;   //return 0 if looser
     }
   }
@@ -106,5 +108,5 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
     }
   }
   nextoptimalvalue = maxsum/(freespaces-1); //divide by number of s' to get the optimal value of the next state
-  return 0.98*nextoptimalvalue;
+  return 0.98*nextoptimalvalue; //discount then return
 }
