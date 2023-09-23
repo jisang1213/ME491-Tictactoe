@@ -78,7 +78,7 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
       return 0;   //return 0 if looser
     }
   }
-  //return 0.5 if result is tie
+  //return 0.5 if result is a tie
   if(freespaces==0){
     return 0.5;
   }
@@ -90,7 +90,7 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
       if(state(i,j) == 0){
         stateaction = state;
         stateaction(i,j) = 1; //do action
-        if(checkwin(stateaction)==1){
+        if(checkwin(stateaction)){
           return 0.98*1; //return 1 discounted by gamma if user wins after action
         }
         else if(freespaces == 1){
@@ -109,17 +109,13 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
             }
           }
         }
-        //update maxsum
+        
         if(sum>maxsum){
-          maxsum = sum;
+          maxsum = sum; //update maxsum
         }
       }
     }
   }
-//
-//  if(maxsum == 0){
-//    return 0; //for case when the discount is
-//  }
 
   nextoptimalvalue = maxsum/(freespaces-1); //divide by number of s' to get the optimal value of the next state
   return 0.98*nextoptimalvalue; //discount then return
