@@ -45,7 +45,7 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
         return 1;   //return 1 if winner
       }
       else if(state(i,0)==-1){
-        return 0;   //return 0 if looser
+        return 0;   //return 0 if loser
       }
     }
   }
@@ -56,7 +56,7 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
         return 1;   //return 1 if winner
       }
       else if(state(0,j)==-1){
-        return 0;   //return 0 if looser
+        return 0;   //return 0 if loser
       }
     }
   }
@@ -66,7 +66,7 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
       return 1;   //return 1 if winner
     }
     else if(state(0,0)==-1){
-      return 0;   //return 0 if looser
+      return 0;   //return 0 if loser
     }
   }
   //check diagonals-"/"
@@ -75,7 +75,7 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
       return 1;   //return 1 if winner
     }
     else if(state(2,0)==-1){
-      return 0;   //return 0 if looser
+      return 0;   //return 0 if loser
     }
   }
   //return 0.5 if result is a tie
@@ -97,8 +97,8 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
           return 0.98*0.5;  //no more free spaces after action and no win -> tie so return 0.5 discounted by gamma
         }
 
+        //if game is not over, consider all s' for given action and take the sum
         sum = 0;
-        //consider all s' for given action and take the sum
         //first, search for empty spaces
         for(int a=0; a<3; a++){
           for(int b=0; b<3; b++){
@@ -111,7 +111,7 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
         }
         
         if(sum>maxsum){
-          maxsum = sum; //update maxsum
+          maxsum = sum; //update maxsum to get the optimal value*number of s'
         }
       }
     }
