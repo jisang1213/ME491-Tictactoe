@@ -2,7 +2,8 @@
 #include <Eigen/Core>
 #include <Eigen/Dense>
 
-double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces);
+double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces); //prototype
+
 
 /// DO NOT CHANGE THE NAME AND FORMAT OF THIS FUNCTION
 double getOptimalValue(Eigen::Matrix3d state){
@@ -15,8 +16,8 @@ double getOptimalValue(Eigen::Matrix3d state){
 
   int freespaces = 0;
   //Find and count number of free spaces
-  for(int i=1; i<=3; i++){
-    for(int j=1; j<=3; j++){
+  for(int i=0; i<3; i++){
+    for(int j=0; j<3; j++){
       if(state(i,j) == 0){
         freespaces++;
       }
@@ -37,42 +38,42 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
 
   //check if the game has ended (base case)
   //check rows
-  for(int i=1; i<=3; i++){
-    if(state(i,1) == state(i,2) && state(i,2) == state(i,3)){
-      if(state(i,1)==1){
+  for(int i=0; i<3; i++){
+    if(state(i,0) == state(i,1) && state(i,1) == state(i,2)){
+      if(state(i,0)==1){
         return 1;   //return 1 if winner
       }
-      else if(state(i,1)==-1){
+      else if(state(i,0)==-1){
         return 0;   //return 0 if looser
       }
     }
   }
   //check columns
-  for(int j=1; j<=3; j++){
-    if(state(1,j) == state(2,j) && state(2,j) == state(3,j)){
-      if(state(1,j)==1){
+  for(int j=0; j<3; j++){
+    if(state(0,j) == state(1,j) && state(1,j) == state(2,j)){
+      if(state(0,j)==1){
         return 1;   //return 1 if winner
       }
-      else if(state(1,j)==-1){
+      else if(state(0,j)==-1){
         return 0;   //return 0 if looser
       }
     }
   }
   //check diagonals-"\"
-  if(state(1,1) == state(2,2) && state(2,2) == state(3,3)){
-    if(state(1,1)==1){
+  if(state(0,0) == state(1,1) && state(1,1) == state(2,2)){
+    if(state(0,0)==1){
       return 1;   //return 1 if winner
     }
-    else if(state(1,1)==-1){
+    else if(state(0,0)==-1){
       return 0;   //return 0 if looser
     }
   }
   //check diagonals-"/"
-  if(state(1,3) == state(2,2) && state(2,2) == state(3,1)){
-    if(state(1,3)==1){
+  if(state(0,2) == state(1,1) && state(1,1) == state(2,0)){
+    if(state(0,2)==1){
       return 1;   //return 1 if winner
     }
-    else if(state(3,1)==-1){
+    else if(state(2,0)==-1){
       return 0;   //return 0 if looser
     }
   }
@@ -83,16 +84,16 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
 
   //find the max value function of the next state over all possible actions. 
   //Search for possible actions (free spaces)
-  for(int i=1; i<=3; i++){
-    for(int j=1; j<=3; j++){
+  for(int i=0; i<3; i++){
+    for(int j=0; j<3; j++){
       if(state(i,j) == 0){
         stateaction = state;
         stateaction(i,j) = 1; //do action
         sum = 0;
 
         //consider all s', take the sum
-        for(int a=1; a<=3; a++){
-          for(int b=1; b<=3; b++){
+        for(int a=0; a<3; a++){
+          for(int b=0; b<3; b++){
             if(stateaction(a,b) == 0){
               nextstate = stateaction;
               nextstate(a,b) = 1;
