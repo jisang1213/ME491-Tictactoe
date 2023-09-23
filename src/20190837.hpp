@@ -3,7 +3,7 @@
 #include <Eigen/Dense>
 
 double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces); //prototype
-
+int checkwin(Eigen::Matrix3d state);
 
 /// DO NOT CHANGE THE NAME AND FORMAT OF THIS FUNCTION
 double getOptimalValue(Eigen::Matrix3d state){
@@ -35,6 +35,7 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
   double nextoptimalvalue;
   Eigen::Matrix3d stateaction;
   Eigen::Matrix3d nextstate;
+
 
   //check if the game has ended (base case)
   //check rows
@@ -77,9 +78,9 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
       return 0;   //return 0 if looser
     }
   }
-  //return 0 if tie
+  //return 0.5 if result is tie
   if(freespaces==0){
-    return 0;
+    return 0.5;
   }
 
   //find the max value function of the next state over all possible actions. 
@@ -89,9 +90,16 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
       if(state(i,j) == 0){
         stateaction = state;
         stateaction(i,j) = 1; //do action
-        sum = 0;
+        if(checkwin(stateaction)==1){
+          return 0.98*1; //return 1 discounted by gamma if user wins after action
+        }
+        else if(freespaces == 1){
+          return 0.98*0.5;  //no more free spaces after action and no win -> tie so return 0.5 discounted by gamma
+        }
 
-        //consider all s', take the sum
+        sum = 0;
+        //consider all s' for given action and take the sum
+        //first, search for empty spaces
         for(int a=0; a<3; a++){
           for(int b=0; b<3; b++){
             if(stateaction(a,b) == 0){
@@ -108,6 +116,38 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
       }
     }
   }
+//
+//  if(maxsum == 0){
+//    return 0; //for case when the discount is
+//  }
+
   nextoptimalvalue = maxsum/(freespaces-1); //divide by number of s' to get the optimal value of the next state
   return 0.98*nextoptimalvalue; //discount then return
+}
+
+
+int checkwin(Eigen::Matrix3d state){
+  //check if the game has ended (base case)
+  //check rows
+  for(int i=0; i<3; i++){
+    if(state(i,0)==1 && state(i,0) == state(i,1) && state(i,1) == state(i,2)){
+      return 1;   //return 1 if winner
+    }
+  }
+  //check columns
+  for(int j=0; j<3; j++){
+    if(state(0,j)==1 && state(0,j) == state(1,j) && state(1,j) == state(2,j)){
+      return 1;   //return 1 if winner
+    }
+  }
+  //check diagonals-"\"
+  if(state(0,0)==1 && state(0,0) == state(1,1) && state(1,1) == state(2,2)){
+    return 1;   //return 1 if winner
+  }
+  //check diagonals-"/"
+  if(state(0,2)==1 && state(0,2) == state(1,1) && state(1,1) == state(2,0)){
+    return 1;   //return 1 if winner
+  }
+
+  return 0; //return 0 if tie or not ended
 }
