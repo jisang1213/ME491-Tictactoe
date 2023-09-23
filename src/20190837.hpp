@@ -96,7 +96,7 @@ double getOptimalValuerecursive(Eigen::Matrix3d state, int freespaces){
           for(int b=0; b<3; b++){
             if(stateaction(a,b) == 0){
               nextstate = stateaction;
-              nextstate(a,b) = 1;
+              nextstate(a,b) = -1;  //opponent's move
               sum = sum + getOptimalValuerecursive(nextstate, freespaces-2);
             }
           }
